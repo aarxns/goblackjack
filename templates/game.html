@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a936f;
+            --secondary-color: #114b5f;
+            --background-color: #1c1c1c;
+            --card-color: #ffffff;
+            --text-color: #ffffff;
+            --table-color: #267f45;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-table {
+            background: var(--table-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            animation: tableAppear 0.5s ease-out;
+        }
+
+        .player-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hand {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .hand:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card {
+            display: inline-block;
+            background: var(--card-color);
+            padding: 1.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            min-width: 70px;
+            text-align: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: cardDeal 0.5s ease-out;
+            color: #000;
+            transform-origin: center bottom;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotate(5deg);
+        }
+
+        .card.red {
+            color: #dc2626;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background-color: #147d5c;
+        }
+
+        button:disabled {
+            background-color: #4b5563;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .bet-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .bet-button {
+            background: #4f46e5;
+        }
+
+        .bet-button:hover {
+            background: #4338ca;
+        }
+
+        .restart-button {
+            background-color: #6366f1;
+        }
+
+        .restart-button:hover {
+            background-color: #4f46e5;
+        }
+
+        .message {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+            animation: messageAppear 0.3s ease-out;
+        }
+
+        @keyframes cardDeal {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) rotate(-20deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotate(0);
+            }
+        }
+
+        @keyframes tableAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .all-in {
+            background: linear-gradient(135deg, #d97706, #fbbf24);
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            border: 2px solid #fbbf24;
+            animation: glowing 1.5s infinite;
+        }
+
+        .all-in:hover {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        @keyframes glowing {
+            0% {
+                box-shadow: 0 0 5px #fbbf24;
+            }
+            50% {
+                box-shadow: 0 0 20px #fbbf24;
+            }
+            100% {
+                box-shadow: 0 0 5px #fbbf24;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Blackjack</h1>
+        <div class="player-info">
+            <div>
+                <h2>Guthaben: €{{printf "%.2f" .Player.Balance}}</h2>
+                {{if not (eq .Player.Bet 0.0)}}
+                    <p>Aktueller Einsatz: €{{printf "%.2f" .Player.Bet}}</p>
+                {{end}}
+            </div>
+        </div>
+
+        <div class="game-table">
+            <div class="hand">
+                <h3>Dealer's Hand ({{.Dealer.Score}})</h3>
+                {{range .Dealer.Hand}}
+                    <div class="card {{if or (eq .Suit "♥") (eq .Suit "♦")}}red{{end}}">
+                        {{.Value}}{{.Suit}}
+                    </div>
+                {{end}}
+            </div>
+
+            <div class="hand">
+                <h3>Ihre Hand ({{.Player.Score}})</h3>
+                {{range .Player.Hand}}
+                    <div class="card {{if or (eq .Suit "♥") (eq .Suit "♦")}}red{{end}}">
+                        {{.Value}}{{.Suit}}
+                    </div>
+                {{end}}
+            </div>
+
+            {{if .Message}}
+                <div class="message">{{.Message}}</div>
+            {{end}}
+
+            {{if eq .Player.Bet 0.0}}
+                {{if gt .Player.Balance 0.0}}
+                    <div class="bet-buttons">
+                        <form action="/placeBet" method="POST" style="display: inline;">
+                            <input type="hidden" name="bet" value="10">
+                            <button type="submit" class="bet-button">€10</button>
+                        </form>
+                        <form action="/placeBet" method="POST" style="display: inline;">
+                            <input type="hidden" name="bet" value="25">
+                            <button type="submit" class="bet-button">€25</button>
+                        </form>
+                        <form action="/placeBet" method="POST" style="display: inline;">
+                            <input type="hidden" name="bet" value="50">
+                            <button type="submit" class="bet-button">€50</button>
+                        </form>
+                        <form action="/placeBet" method="POST" style="display: inline;">
+                            <input type="hidden" name="bet" value="100">
+                            <button type="submit" class="bet-button">€100</button>
+                        </form>
+                        <form action="/placeBet" method="POST" style="display: inline;">
+                            <input type="hidden" name="bet" value="{{.Player.Balance}}">
+                            <button type="submit" class="bet-button all-in">All In €{{printf "%.2f" .Player.Balance}}</button>
+                        </form>
+                    </div>
+                {{else}}
+                    <div class="message">
+                        <p>Sie haben kein Guthaben mehr!</p>
+                        <form action="/newGame" method="POST" style="display: inline; margin-top: 1rem;">
+                            <button type="submit" class="restart-button">Neues Spiel mit €1000</button>
+                        </form>
+                    </div>
+                {{end}}
+            {{else}}
+                <div class="controls">
+                    <form action="/hit" method="POST" style="display: inline;">
+                        <button type="submit" {{if .GameOver}}disabled{{end}}>Hit</button>
+                    </form>
+                    <form action="/stand" method="POST" style="display: inline;">
+                        <button type="submit" {{if .GameOver}}disabled{{end}}>Stand</button>
+                    </form>
+                    <form action="/restartRound" method="POST" style="display: inline;">
+                        <button type="submit" class="restart-button">Runde neu starten</button>
+                    </form>
+                    {{if .GameOver}}
+                        <form action="/newGame" method="POST" style="display: inline;">
+                            <button type="submit">Neues Spiel</button>
+                        </form>
+                    {{end}}
+                </div>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html> 

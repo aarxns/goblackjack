@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          
+      - name: Build binaries
+        run: |
+          # Create builds directory
+          mkdir -p builds
+          
+          # Build for Linux AMD64
+          GOOS=linux GOARCH=amd64 go build -o builds/blackjack-linux-amd64
+          
+          # Build for macOS ARM64
+          GOOS=darwin GOARCH=arm64 go build -o builds/blackjack-darwin-arm64
+          
+          # Build for Windows AMD64
+          GOOS=windows GOARCH=amd64 go build -o builds/blackjack-windows-amd64.exe
+          
+          # Create ZIP archives
+          cd builds
+          zip blackjack-linux-amd64.zip blackjack-linux-amd64
+          zip blackjack-darwin-arm64.zip blackjack-darwin-arm64
+          zip blackjack-windows-amd64.zip blackjack-windows-amd64.exe
+          cd ..
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            builds/blackjack-linux-amd64.zip
+            builds/blackjack-darwin-arm64.zip
+            builds/blackjack-windows-amd64.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true 
